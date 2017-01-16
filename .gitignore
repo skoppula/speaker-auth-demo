@@ -1,0 +1,9 @@
+__pycache__/*
+smp*
+q/*
+!exp/ie_500_600/
+exp/ie_500_600/*.ie
+exp/ie_500_600/*.gz
+exp/ie_500_600/log/
+exp/ie_500_600/q/
+.ipynb_checkpoints/
