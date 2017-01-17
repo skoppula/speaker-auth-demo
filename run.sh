@@ -29,6 +29,7 @@ do
 done
 
 if [ $stage -le 0 ]; then
+    rm /tmp/test.wav
     echo "Please speak for 5 seconds!..."
     arecord -t wav -d 5 /tmp/test.wav
     echo "Done recording..."
