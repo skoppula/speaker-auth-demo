@@ -29,7 +29,7 @@ do
 done
 
 if [ $stage -le 0 ]; then
-    rm /tmp/test.wav
+    rm -f /tmp/test.wav
     echo "Please speak for 5 seconds!..."
     arecord -t wav -d 5 /tmp/test.wav
     echo "Done recording..."
@@ -99,7 +99,7 @@ fi
 if [ $stage -le 8 ]; then
     echo "Starting testing neural network classifier..."
     #   Length normalize per-utterance i-vectors for verify
-    source activate tensorflow
+    # source activate tensorflow
     python classify.py ./model/curr_best_weights.hdf5 ./model/spk_mappings.pickle np/ivecs/X.npy
     echo "Done classifying speaker."
 fi
