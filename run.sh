@@ -77,3 +77,14 @@ if [ $stage -le 6 ]; then
     echo 'Starting neural network inference...'
     python demo.py exp/test_utt.npy
 fi
+
+if [ $stage -le 67 ]; then
+	if [[ $(cat exp/testutt_guessedspk.txt | grep "yes") ]]; then
+		echo 'Passed!'
+		cvlc sounds/startup.mp3
+	else
+		echo 'Not passed!'
+		cvlc sounds/error.mp3
+	fi
+fi
+
