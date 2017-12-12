@@ -69,10 +69,10 @@ if [ $stage -le 4 ]; then
 fi
 
 if [ $stage -le 5 ]; then
-    python read_mfcc_ark.py
+    python scripts/read_mfcc_ark.py
 fi
 
 if [ $stage -le 6 ]; then
     # model_data/
-    python demo.py npy-utts/test_utt.npy
+    python demo.py exp/test_utt.npy
 fi

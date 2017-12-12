@@ -2,9 +2,7 @@
 import numpy as np
 import sys
 from collections import Counter
-from keras.models import load_model
-from keras import backend as K
-from keras.models import Model
+import tensorflow as tf
 
 MAX_NUM_FRMS = 0
 MFCC_SIZE = 20
@@ -33,20 +31,23 @@ def score_softmax_outputs(nn_batch_output):
 
 if __name__ == '__main__':
 
-    saved_model_path = 'model_data/context_50frms_4mx.model.hdf5'
-    model = load_model(saved_model_path)
-
     assert sys.argv[1]
     utt_data = np.load(sys.argv[1])
     n_frms = utt_data.shape[0] - N_INP_FRMS + 1
     batch_x = np.zeros((n_frms, N_INP_FRMS*MFCC_SIZE))
     for i in range(n_frms):
         batch_x[i] = utt_data[i:(i+N_INP_FRMS), 0:MFCC_SIZE].reshape(1, N_INP_FRMS*MFCC_SIZE)
-    nn_output = model.predict_on_batch(batch_x)
 
-    intermediate_layer_model = Model(inputs=model.input, outputs=model.get_layer('dense_1').output)
-    intermediate_output = intermediate_layer_model.predict(batch_x)
-    print(intermediate_output.shape)
+    checkpoint_path = tf.train.latest_checkpoint("./model_data/")
+    saver = tf.train.import_meta_graph(checkpoint_path + ".meta", import_scope=None)
+    with tf.Session() as sess:
+        saver.restore(sess, checkpoint_path)
+        nn_dvector = sess.run("dense_1/BiasAdd:0", feed_dict={"maxout_dense_1_input:0": batch_x})
+        nn_output = sess.run("output_node0:0", feed_dict={"maxout_dense_1_input:0": batch_x})
+
+    print "dvector", nn_dvector.shape
+    print "output", nn_output.shape
+
     spk = 0
     print(score_softmax_outputs(nn_output))
     is_correct = int(spk == score_softmax_outputs(nn_output))
