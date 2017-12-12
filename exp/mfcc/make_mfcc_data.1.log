@@ -1,10 +1,10 @@
-# compute-mfcc-feats --verbose=2 --config=conf/mfcc.conf scp,p:exp/mfcc/wav_data.1.scp ark:- | copy-feats --compress=true ark:- ark,scp:/data/sls/r/u/skanda/home/demo/speaker-auth-demo/data/mfcc/raw_mfcc_data.1.ark,/data/sls/r/u/skanda/home/demo/speaker-auth-demo/data/mfcc/raw_mfcc_data.1.scp 
-# Started at Tue Dec 12 02:21:58 EST 2017
+# compute-mfcc-feats --verbose=2 --config=conf/mfcc.conf scp,p:exp/mfcc/wav_data.1.scp ark:- | copy-feats --compress=true ark:- ark,scp:/home/pi/speaker-auth-demo/data/mfcc/raw_mfcc_data.1.ark,/home/pi/speaker-auth-demo/data/mfcc/raw_mfcc_data.1.scp 
+# Started at Tue Dec 12 03:33:12 EST 2017
 #
-copy-feats --compress=true ark:- ark,scp:/data/sls/r/u/skanda/home/demo/speaker-auth-demo/data/mfcc/raw_mfcc_data.1.ark,/data/sls/r/u/skanda/home/demo/speaker-auth-demo/data/mfcc/raw_mfcc_data.1.scp 
+copy-feats --compress=true ark:- ark,scp:/home/pi/speaker-auth-demo/data/mfcc/raw_mfcc_data.1.ark,/home/pi/speaker-auth-demo/data/mfcc/raw_mfcc_data.1.scp 
 compute-mfcc-feats --verbose=2 --config=conf/mfcc.conf scp,p:exp/mfcc/wav_data.1.scp ark:- 
-VLOG[2] (compute-mfcc-feats[5.0.30~1-61510]:main():compute-mfcc-feats.cc:178) Processed features for key test_utt
-LOG (compute-mfcc-feats[5.0.30~1-61510]:main():compute-mfcc-feats.cc:181)  Done 1 out of 1 utterances.
-LOG (copy-feats[5.0.30~1-61510]:main():copy-feats.cc:120) Copied 1 feature matrices.
+VLOG[2] (compute-mfcc-feats:main():compute-mfcc-feats.cc:178) Processed features for key test_utt
+LOG (compute-mfcc-feats:main():compute-mfcc-feats.cc:181)  Done 1 out of 1 utterances.
+LOG (copy-feats:main():copy-feats.cc:120) Copied 1 feature matrices.
 # Accounting: time=0 threads=1
-# Ended (code 0) at Tue Dec 12 02:21:58 EST 2017, elapsed time 0 seconds
+# Ended (code 0) at Tue Dec 12 03:33:12 EST 2017, elapsed time 0 seconds

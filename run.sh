@@ -8,7 +8,7 @@ elif [ $1 == "process" ]; then
     stage=2
 elif [ $1 == "classify" ]; then
     echo "Classifying existing data in current directory..."
-    stage=8
+    stage=6
 else
     echo "invalid option: argument must be one of record, process, or classify"
     exit 1
@@ -18,7 +18,7 @@ nj=1
 ubmsize=500
 ivectordim=600
 
-export KALDI_ROOT="/data/sls/u/meng/skanda/kaldi"
+export KALDI_ROOT="/home/pi/kaldi-trunk"
 export PATH=$PWD/utils/:$KALDI_ROOT/src/bin:$KALDI_ROOT/tools/openfst/bin:$KALDI_ROOT/src/fstbin/:$KALDI_ROOT/src/gmmbin/:$KALDI_ROOT/src/featbin/:$KALDI_ROOT/src/lm/:$KALDI_ROOT/src/sgmmbin/:$KALDI_ROOT/src/sgmm2bin/:$KALDI_ROOT/src/fgmmbin/:$KALDI_ROOT/src/latbin/:$KALDI_ROOT/src/nnetbin:$KALDI_ROOT/src/nnet2bin:$KALDI_ROOT/src/ivectorbin:$KALDI_ROOT/tools/sph2pipe_v2.5:$PWD:$PATH
 export LC_ALL=C
 export train_cmd=run.pl
@@ -31,7 +31,7 @@ done
 if [ $stage -le 0 ]; then
     rm -f /tmp/test.wav
     echo "Please speak for 5 seconds!..."
-    arecord -t wav -d 5 /tmp/test.wav
+    arecord -t wav -d 5 /tmp/test.wav -f S16_LE
     echo "Done recording..."
 fi
 
@@ -74,5 +74,6 @@ fi
 
 if [ $stage -le 6 ]; then
     # model_data/
+    echo 'Starting neural network inference...'
     python demo.py exp/test_utt.npy
 fi
