@@ -81,10 +81,10 @@ fi
 if [ $stage -le 67 ]; then
 	if [[ $(cat exp/testutt_guessedspk.txt | grep "yes") ]]; then
 		echo 'Passed!'
-		cvlc sounds/startup.mp3
+		# cvlc sounds/startup.mp3
 	else
 		echo 'Not passed!'
-		cvlc sounds/error.mp3
+		# cvlc sounds/error.mp3
 	fi
 fi
 
