@@ -1,9 +1,11 @@
 import numpy as np
+import sys
 
 MFCC_SIZE = 20
 N_INP_FRMS = 50
 
-utt_data = np.load('exp/test_utt.npy')
+assert sys.argv[1]
+utt_data = np.load(sys.argv[1])
 n_frms = utt_data.shape[0] - N_INP_FRMS + 1
 batch_x = np.zeros((n_frms, N_INP_FRMS*MFCC_SIZE))
 for i in range(n_frms):

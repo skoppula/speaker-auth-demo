@@ -36,13 +36,11 @@ if [ $stage -le 0 ]; then
 fi
 
 if [ $stage -le 1 ]; then
-    echo "Setting up Kaldi files now..."
     mkdir -p data
     echo "test_utt /tmp/test.wav" > data/wav.scp
     echo "test_utt test_spk" > data/utt2spk
     cat data/utt2spk | utils/utt2spk_to_spk2utt.pl > data/spk2utt
     echo "test_spk f" > data/$dataset/spk2gender
-    echo "Ending Kaldi files setup now..."
 fi
 
 if [ $stage -le 2 ]; then
@@ -75,16 +73,14 @@ fi
 if [ $stage -le 6 ]; then
     # model_data/
     echo 'Starting neural network inference...'
-    python demo.py exp/test_utt.npy
+    python demoV2.py exp/test_utt.npy
 fi
 
 if [ $stage -le 67 ]; then
 	if [[ $(cat exp/testutt_guessedspk.txt | grep "yes") ]]; then
-		echo 'Passed!'
-		# cvlc sounds/startup.mp3
+		echo 'Passed verification!'
 	else
-		echo 'Not passed!'
-		# cvlc sounds/error.mp3
+		echo 'Did not pass verification!'
 	fi
 fi
 
