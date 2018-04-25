@@ -1,4 +1,5 @@
 #!/bin/bash -e
+source activate pi
 
 if [ $1 == "record" ]; then 
     echo "Recording new wav and starting pipeline ..."
@@ -35,6 +36,7 @@ if [ $stage -le 0 ]; then
     echo "Done recording..."
 fi
 
+echo 'Sending audio samples to ZYNC FPGA for processing...'
 if [ $stage -le 1 ]; then
     mkdir -p data
     echo "test_utt /tmp/test.wav" > data/wav.scp
@@ -44,26 +46,20 @@ if [ $stage -le 1 ]; then
 fi
 
 if [ $stage -le 2 ]; then
-    echo "Now processing wav files into MFCCs..."
     steps/make_mfcc.sh --mfcc-config conf/mfcc.conf --nj $nj \
-        --cmd "$train_cmd" data exp/mfcc data/mfcc
-    echo "Finished MFCCs."
+        --cmd "$train_cmd" data exp/mfcc data/mfcc > /dev/null 2>&1
 fi
 
 if [ $stage -le 3 ]; then
-    echo "Computing VAD..."
     sid/compute_vad_decision.sh --nj $nj --cmd "$train_cmd" \
-        data exp/vad data/vad
-    echo "Finished VAD."
+        data exp/vad data/vad > /dev/null 2>&1
 fi
 
 vad_delta_dir="data/dd_mfcc_postvad"
 
 if [ $stage -le 4 ]; then
-    echo "Now applying VAD filtering, add deltas, and CMVN filters..."
     mkdir -p $vad_delta_dir
-    add-deltas $delta_opts scp:data/feats.scp ark:- | apply-cmvn-sliding --norm-vars=false --center=true --cmn-window=300 ark:- ark:- | select-voiced-frames ark:- scp,s,cs:data/vad.scp ark,scp:$vad_delta_dir/dd_mfcc_postvad.ark,$vad_delta_dir/dd_mfcc_postvad.scp
-    echo "Finished applying filters to $vad_delta_dir/dd_mfcc_postvad.ark,$vad_delta_dir/dd_mfcc_postvad.scp."
+    add-deltas $delta_opts scp:data/feats.scp ark:- | apply-cmvn-sliding --norm-vars=false --center=true --cmn-window=300 ark:- ark:- | select-voiced-frames ark:- scp,s,cs:data/vad.scp ark,scp:$vad_delta_dir/dd_mfcc_postvad.ark,$vad_delta_dir/dd_mfcc_postvad.scp > /dev/null 2>&1
 fi
 
 if [ $stage -le 5 ]; then
@@ -71,8 +67,6 @@ if [ $stage -le 5 ]; then
 fi
 
 if [ $stage -le 6 ]; then
-    # model_data/
-    echo 'Starting neural network inference...'
     python demoV2.py exp/test_utt.npy
 fi
 

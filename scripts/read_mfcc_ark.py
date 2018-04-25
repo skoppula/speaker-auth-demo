@@ -17,4 +17,3 @@ NP_DIR = 'exp/'
 mkdir(NP_DIR)
 path = NP_DIR + utt_id + '.npy'
 np.save(path, utt_data)
-print("Finished saving MFCC npy", path)
