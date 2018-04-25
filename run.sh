@@ -5,7 +5,7 @@ if [ $1 == "record" ]; then
     echo "Recording new wav and starting pipeline ..."
     stage=0
 elif [ $1 == "process" ]; then
-    echo "Processing existing wave file in /tmp/test.wav..."
+    echo "Processing existing wave file in ./tmp/test.wav..."
     stage=2
 elif [ $1 == "classify" ]; then
     echo "Classifying existing data in current directory..."
@@ -30,16 +30,16 @@ do
 done
 
 if [ $stage -le 0 ]; then
-    rm -f /tmp/test.wav
+    rm -f ./tmp/test.wav
     echo "Please speak for 5 seconds!..."
-    arecord -t wav -d 5 /tmp/test.wav -f S16_LE
+    arecord -t wav -d 5 ./tmp/test.wav -f S16_LE
     echo "Done recording..."
 fi
 
 echo 'Sending audio samples to ZYNC FPGA for processing...'
 if [ $stage -le 1 ]; then
     mkdir -p data
-    echo "test_utt /tmp/test.wav" > data/wav.scp
+    echo "test_utt ./tmp/test.wav" > data/wav.scp
     echo "test_utt test_spk" > data/utt2spk
     cat data/utt2spk | utils/utt2spk_to_spk2utt.pl > data/spk2utt
     echo "test_spk f" > data/$dataset/spk2gender
@@ -59,7 +59,9 @@ vad_delta_dir="data/dd_mfcc_postvad"
 
 if [ $stage -le 4 ]; then
     mkdir -p $vad_delta_dir
-    add-deltas $delta_opts scp:data/feats.scp ark:- | apply-cmvn-sliding --norm-vars=false --center=true --cmn-window=300 ark:- ark:- | select-voiced-frames ark:- scp,s,cs:data/vad.scp ark,scp:$vad_delta_dir/dd_mfcc_postvad.ark,$vad_delta_dir/dd_mfcc_postvad.scp > /dev/null 2>&1
+    add-deltas $delta_opts scp:data/feats.scp ark:tmp/tmp1.ark > /dev/null 2>&1
+    apply-cmvn-sliding --norm-vars=false --center=true --cmn-window=300 ark:tmp/tmp1.ark ark:tmp/tmp2.ark > /dev/null 2>&1
+    select-voiced-frames ark:tmp/tmp2.ark scp,s,cs:data/vad.scp ark,scp:$vad_delta_dir/dd_mfcc_postvad.ark,$vad_delta_dir/dd_mfcc_postvad.scp > /dev/null 2>&1
 fi
 
 if [ $stage -le 5 ]; then
@@ -70,7 +72,7 @@ if [ $stage -le 6 ]; then
     python demoV2.py exp/test_utt.npy
 fi
 
-if [ $stage -le 67 ]; then
+if [ $stage -le 7 ]; then
 	if [[ $(cat exp/testutt_guessedspk.txt | grep "yes") ]]; then
 		echo 'Passed verification!'
 	else

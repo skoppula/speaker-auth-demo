@@ -1,1 +1,1 @@
-test_utt /tmp/test.wav
+test_utt ./tmp/test.wav

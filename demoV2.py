@@ -60,8 +60,9 @@ for i in range(10):
     sum_dists += dist
     print(dist)
 avg_dist = sum_dists/10
+print("Avg Dist from Saved Model:", avg_dist)
 
-is_correct = avg_dist < 0.11
+is_correct = avg_dist < 0.17
 
 if is_correct:
     print("I think its Skanda!")
