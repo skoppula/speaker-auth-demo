@@ -1,5 +1,6 @@
 import numpy as np
 import sys
+import math
 
 MFCC_SIZE = 20
 N_INP_FRMS = 50
@@ -52,17 +53,20 @@ out = fc(inp, W, b)
 
 
 g_mean = np.average(out, axis=0)
-sum_dists = 0
+sum_dists = 0; count = 0; dists = []
 for i in range(10):
     m = np.load('model_data/skanda/' + str(i) + '.npy')
     m_mean = np.average(m, axis=0)
     dist = 1 - np.dot(m_mean, g_mean)/(np.linalg.norm(m_mean)*np.linalg.norm(g_mean))
-    sum_dists += dist
-    # print(dist)
+    if not math.isnan(dist):
+        sum_dists += dist
+        count += 1
+    dists.append(dist)
 avg_dist = sum_dists/10
 print("[HOST] Avg Dist from Saved Model: %s" % (avg_dist,))
 
-is_correct = avg_dist < 0.17
+is_correct = avg_dist < 0.19
 
 with open('exp/testutt_guessedspk.txt', 'w') as f:
-    f.write("yes" if is_correct else "no")
+    f.write("yes\n" if is_correct else "no\n")
+    f.write(' '.join([str(x) for x in dists]))

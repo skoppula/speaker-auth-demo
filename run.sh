@@ -1,5 +1,10 @@
 #!/bin/bash -e
-source activate pi
+# source activate pi
+
+rm -f /tmp/xilinx.log
+touch /tmp/xilinx.log
+cat /dev/ttyUSB1 > /tmp/xilinx.log &
+echo "s" > /dev/ttyUSB1
 
 if [ $1 == "record" ]; then 
     echo "[HOST] Recording new wav and starting pipeline ..."
@@ -37,6 +42,8 @@ if [ $stage -le 0 ]; then
 fi
 
 echo '[HOST] Sending audio samples to ZYNC FPGA for processing...'
+echo "d" > /dev/ttyUSB1
+
 if [ $stage -le 1 ]; then
     mkdir -p data
     echo "test_utt ./tmp/test.wav" > data/wav.scp
@@ -68,15 +75,26 @@ if [ $stage -le 5 ]; then
     python scripts/read_mfcc_ark.py
 fi
 
-if [ $stage -le 6 ]; then
-    python demoV2.py exp/test_utt.npy
+cat /tmp/xilinx.log
+if [ -s diff.txt ]
+then
+	echo "[HOST] Could not communicate with FPGA."
+else
+	echo "[HOST] Received FPGA response."
+	if [ $stage -le 6 ]; then
+	    python demoV2.py exp/test_utt.npy
+	fi
+
+
+	if [ $stage -le 7 ]; then
+		if [[ $(cat exp/testutt_guessedspk.txt | grep "yes") ]]; then
+			echo "[HOST] I think it's Skanda. Passed verification!"
+		else
+			echo "[HOST] I dont think it's Skanda. Did not pass verification!"
+		fi
+	fi
+
 fi
 
-if [ $stage -le 7 ]; then
-	if [[ $(cat exp/testutt_guessedspk.txt | grep "yes") ]]; then
-		echo "[HOST] I think it's Skanda. Passed verification!"
-	else
-		echo "[HOST] I dont think it's Skanda. Did not pass verification!"
-	fi
-fi
+kill $(ps aux | grep '[c]at /dev/ttyUSB1' | awk '{print $2}')
 
