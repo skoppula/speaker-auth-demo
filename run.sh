@@ -2,16 +2,16 @@
 source activate pi
 
 if [ $1 == "record" ]; then 
-    echo "Recording new wav and starting pipeline ..."
+    echo "[HOST] Recording new wav and starting pipeline ..."
     stage=0
 elif [ $1 == "process" ]; then
-    echo "Processing existing wave file in ./tmp/test.wav..."
+    echo "[HOST] Processing existing wave file in ./tmp/test.wav..."
     stage=2
 elif [ $1 == "classify" ]; then
-    echo "Classifying existing data in current directory..."
+    echo "[HOST] Classifying existing data in current directory..."
     stage=6
 else
-    echo "invalid option: argument must be one of record, process, or classify"
+    echo "[HOST] Invalid option: argument must be one of record, process, or classify"
     exit 1
 fi
 
@@ -31,12 +31,12 @@ done
 
 if [ $stage -le 0 ]; then
     rm -f ./tmp/test.wav
-    echo "Please speak for 5 seconds!..."
+    echo "[HOST] Please speak for 5 seconds!..."
     arecord -t wav -d 5 ./tmp/test.wav -f S16_LE
-    echo "Done recording..."
+    echo "[HOST] Done recording..."
 fi
 
-echo 'Sending audio samples to ZYNC FPGA for processing...'
+echo '[HOST] Sending audio samples to ZYNC FPGA for processing...'
 if [ $stage -le 1 ]; then
     mkdir -p data
     echo "test_utt ./tmp/test.wav" > data/wav.scp
@@ -74,9 +74,9 @@ fi
 
 if [ $stage -le 7 ]; then
 	if [[ $(cat exp/testutt_guessedspk.txt | grep "yes") ]]; then
-		echo 'Passed verification!'
+		echo "[HOST] I think it's Skanda. Passed verification!"
 	else
-		echo 'Did not pass verification!'
+		echo "[HOST] I dont think it's Skanda. Did not pass verification!"
 	fi
 fi
 

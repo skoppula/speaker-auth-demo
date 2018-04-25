@@ -58,13 +58,11 @@ for i in range(10):
     m_mean = np.average(m, axis=0)
     dist = 1 - np.dot(m_mean, g_mean)/(np.linalg.norm(m_mean)*np.linalg.norm(g_mean))
     sum_dists += dist
-    print(dist)
+    # print(dist)
 avg_dist = sum_dists/10
-print("Avg Dist from Saved Model:", avg_dist)
+print("[HOST] Avg Dist from Saved Model: %s" % (avg_dist,))
 
 is_correct = avg_dist < 0.17
 
-if is_correct:
-    print("I think its Skanda!")
-else:
-    print("I don't think its Skanda!")
+with open('exp/testutt_guessedspk.txt', 'w') as f:
+    f.write("yes" if is_correct else "no")
