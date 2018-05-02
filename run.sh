@@ -75,14 +75,17 @@ if [ $stage -le 5 ]; then
     python scripts/read_mfcc_ark.py
 fi
 
+cat exp/test_utt.txt > /dev/ttyUSB1
+sleep 4 # FPGA processing
 cat /tmp/xilinx.log
-if [ -s diff.txt ]
+if [ -s /tmp/xilinx.log ]
 then
-	echo "[HOST] Could not communicate with FPGA."
+	echo "[HOST] Did not receive response from FPGA."
 else
 	echo "[HOST] Received FPGA response."
 	if [ $stage -le 6 ]; then
-	    python demoV2.py exp/test_utt.npy
+	    # python demoV2.py exp/test_utt.npy
+	    python process_fpga_response.py /tmp/xilinx.log
 	fi
 
 
@@ -97,4 +100,5 @@ else
 fi
 
 kill $(ps aux | grep '[c]at /dev/ttyUSB1' | awk '{print $2}')
+
 
